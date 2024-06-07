@@ -52,6 +52,24 @@ TS_AUTHKEY=<tskey-auth-XXXXX> ./caddy run -c examples/<file>
 
 [examples directory]: ./examples/
 
+### Run with Docker
+
+Run the pre-built docker image with:
+
+```sh
+docker run -it -rm ghcr.io/tailscale/caddy-tailscale
+```
+
+Mount a custom Caddyfile to `/etc/caddy/Caddyfile` and optionally mount a volume
+to `/config` to persist the default Tailscale state directory:
+
+```sh
+docker run -it -rm \
+  -e TS_AUTHKEY="tskey-auth-XXX" \
+  -v ./custom.caddyfile:/etc/caddyCaddyfile -v ./config:config \
+  ghcr.io/tailscale/caddy-tailscale
+```
+
 ## Configuration
 
 In a [Caddyfile], use the `tailscale` [global option] to configure your Tailscale nodes.
