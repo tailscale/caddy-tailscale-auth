@@ -49,12 +49,12 @@ func getTCPListener(c context.Context, network string, host string, portRange st
 	if !ok {
 		return nil, fmt.Errorf("context is not a caddy.Context: %T", c)
 	}
-	
+
 	na, err := caddy.ParseNetworkAddress(caddy.JoinNetworkAddress(network, host, portRange))
 	if err != nil {
 		return nil, err
 	}
-	
+
 	addr := na.JoinHostPort(portOffset)
 	network, host, port, err := caddy.SplitNetworkAddress(addr)
 	if err != nil {
@@ -82,7 +82,7 @@ func getTLSListener(c context.Context, network string, host string, portRange st
 	if err != nil {
 		return nil, err
 	}
-	
+
 	addr := na.JoinHostPort(portOffset)
 	network, host, port, err := caddy.SplitNetworkAddress(addr)
 	if err != nil {
@@ -121,7 +121,7 @@ func getUDPListener(c context.Context, network string, host string, portRange st
 	if err != nil {
 		return nil, err
 	}
-	
+
 	addr := na.JoinHostPort(portOffset)
 	network, host, port, err := caddy.SplitNetworkAddress(addr)
 	if err != nil {
@@ -183,6 +183,7 @@ func getNode(ctx caddy.Context, name string) (*tailscaleNode, error) {
 			},
 			Ephemeral:    getEphemeral(name, app),
 			RunWebClient: getWebUI(name, app),
+			Port:         getPort(name, app),
 		}
 
 		if s.AuthKey, err = getAuthKey(name, app); err != nil {
@@ -266,6 +267,14 @@ func getHostname(name string, app *App) (string, error) {
 	}
 
 	return name, nil
+}
+
+func getPort(name string, app *App) uint16 {
+	if node, ok := app.Nodes[name]; ok {
+		return node.Port
+	}
+
+	return 0
 }
 
 func getStateDir(name string, app *App) (string, error) {

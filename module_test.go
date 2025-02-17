@@ -221,6 +221,34 @@ func Test_GetHostname(t *testing.T) {
 	}
 }
 
+func Test_GetPort(t *testing.T) {
+	app := &App{
+		Nodes: map[string]Node{
+			"empty": {},
+			"port":  {Port: 3000},
+		},
+	}
+	if err := app.Provision(caddy.Context{}); err != nil {
+		t.Fatal(err)
+	}
+
+	got := getPort("noconfig", &App{})
+	if want := uint16(0); got != want {
+		t.Errorf("GetPort() = %v, want %v", got, want)
+	}
+
+	got = getPort("empty", app)
+	if want := uint16(0); got != want {
+		t.Errorf("GetPort() = %v, want %v", got, want)
+	}
+
+	got = getPort("port", app)
+	if want := uint16(3000); got != want {
+		t.Errorf("GetPort() = %v, want %v", got, want)
+	}
+
+}
+
 func Test_GetStateDir(t *testing.T) {
 	const nodeName = "node"
 	configDir := must.Get(os.UserConfigDir())

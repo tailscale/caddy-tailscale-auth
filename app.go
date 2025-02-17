@@ -66,6 +66,8 @@ type Node struct {
 	// Hostname is the hostname to use when registering the node.
 	Hostname string `json:"hostname,omitempty" caddy:"namespace=tailscale.hostname"`
 
+	Port uint16 `json:"port,omitempty" caddy:"namespace=tailscale.port"`
+
 	// StateDir specifies the state directory for the node.
 	StateDir string `json:"state_dir,omitempty" caddy:"namespace=tailscale.state_dir"`
 
@@ -190,6 +192,17 @@ func parseNodeConfig(d *caddyfile.Dispenser) (Node, error) {
 			} else {
 				node.Ephemeral = opt.NewBool(true)
 			}
+		case "port":
+			if segment.NextArg() {
+				v, err := strconv.ParseUint(segment.Val(), 10, 16)
+				if err != nil {
+					return node, segment.WrapErr(err)
+				}
+				node.Port = uint16(v)
+			} else {
+				node.Port = 0
+			}
+
 		case "hostname":
 			if !segment.NextArg() {
 				return node, segment.ArgErr()
